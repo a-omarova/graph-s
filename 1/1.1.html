@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Title</title>
+</head>
+<body>
+<script>
+	var c = 0;
+	var arr = [];
+	arr[10] = 100;
+	var g = arr.map(v => {c = c + 1; return v;});
+	console.log(c);
+	console.log(arr);
+	console.log(g);
+</script>
+</body>
+</html>
