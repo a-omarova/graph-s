@@ -1,9 +1,11 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 const app = express();
 
 app.use(bodyParser.json()); // for parsing application/json
 app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
+app.use(cookieParser());
 
 app.get('/hello', function(req, res){
 
@@ -14,10 +16,30 @@ app.get('/hello', function(req, res){
     'Access-Control-Max-Age': '600'
   });
 
-  res.send('hello world!');
+  res.send({ some: 'json' });
 });
 
-app.post('/', function(req, res){
+app.post('/index-post.html', function (req, res, next) {
+
+	const options = {
+		headers: {
+			'x-timestamp': Date.now(),
+			'x-sent': true
+		}
+	};
+
+	const fileName = req.params.name;
+	res.sendFile(fileName, options, function (err) {
+		if (err) {
+			next(err);
+		} else {
+			console.log('Sent:', fileName);
+		}
+	});
+
+});
+
+app.post('/post', function(req, res){
 
   res.header({
     'Access-Control-Allow-Origin': '*',
@@ -26,9 +48,14 @@ app.post('/', function(req, res){
     'Access-Control-Max-Age': '600'
   });
 
-  console.log(req.body);
+	console.log('Cookies: ', req.cookies)
 
-  res.json({status: 'OK', ...req.body});
+	// Cookies that have been signed
+	console.log('Signed Cookies: ', req.signedCookies)
+
+	console.log(req.body);
+
+	res.json({status: 'OK', ...req.body})
 });
 
 app.listen(3001, '127.0.0.1');
